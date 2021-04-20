@@ -2,10 +2,10 @@ package bangkit.adhytia.moviecatalogue.ui.home
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
-import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
-import androidx.test.espresso.matcher.ViewMatchers.withId
+import androidx.test.espresso.matcher.ViewMatchers.*
 import androidx.test.ext.junit.rules.ActivityScenarioRule
 import bangkit.adhytia.moviecatalogue.R
 import org.junit.Rule
@@ -20,6 +20,17 @@ class HomeActivityTest {
     fun loadMovies() {
         onView(withId(R.id.rv_movies)).check(matches(isDisplayed()))
         onView(withId(R.id.rv_movies)).perform(
+            RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
+                20
+            )
+        )
+    }
+
+    @Test
+    fun loadTvShows() {
+        onView(withText("tvshow")).perform(click())
+        onView(withId(R.id.rv_tvshows)).check(matches(isDisplayed()))
+        onView(withId(R.id.rv_tvshows)).perform(
             RecyclerViewActions.scrollToPosition<RecyclerView.ViewHolder>(
                 20
             )

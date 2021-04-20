@@ -2,6 +2,7 @@ package bangkit.adhytia.moviecatalogue.repository
 
 import android.app.Activity
 import bangkit.adhytia.moviecatalogue.data.MovieEntity
+import bangkit.adhytia.moviecatalogue.data.TvShowEntity
 import bangkit.adhytia.moviecatalogue.utils.Constants.Companion.BASE_IMAGE_URL
 import bangkit.adhytia.moviecatalogue.utils.Constants.Companion.NO_IMAGE_URL
 import org.json.JSONException
@@ -41,6 +42,43 @@ class Repository(private val activity: Activity) {
                     )
 
                     list.add(movie)
+                }
+            } catch (e: JSONException) {
+                e.printStackTrace()
+            }
+            return list
+        }
+
+    val listTvShows: ArrayList<TvShowEntity>
+        get() {
+            val list = arrayListOf<TvShowEntity>()
+            try {
+                val obj = JSONObject(loadJSONFromAsset("populartvshows.json"))
+                val tvshowArray = obj.getJSONArray("results")
+                for (i in 0 until tvshowArray.length()) {
+                    val tvshowDetail = tvshowArray.getJSONObject(i)
+
+                    var posterPath = tvshowDetail.getString("poster_path")
+                    var backdropPath = tvshowDetail.getString("backdrop_path")
+
+                    posterPath =
+                        if (posterPath.isNullOrBlank()) NO_IMAGE_URL else BASE_IMAGE_URL + posterPath
+                    backdropPath =
+                        if (backdropPath.isNullOrBlank()) NO_IMAGE_URL else BASE_IMAGE_URL + backdropPath
+
+                    val tvshow = TvShowEntity(
+                        tvshowDetail.getInt("id"),
+                        tvshowDetail.getString("name"),
+                        tvshowDetail.getString("overview"),
+                        posterPath,
+                        backdropPath,
+                        tvshowDetail.getString("first_air_date"),
+                        tvshowDetail.getString("vote_average"),
+                        tvshowDetail.getString("vote_count"),
+                        tvshowDetail.getString("popularity")
+                    )
+
+                    list.add(tvshow)
                 }
             } catch (e: JSONException) {
                 e.printStackTrace()
