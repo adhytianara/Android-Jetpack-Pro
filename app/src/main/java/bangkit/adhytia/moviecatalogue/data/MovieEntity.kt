@@ -1,5 +1,9 @@
 package bangkit.adhytia.moviecatalogue.data
 
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
 data class MovieEntity(
     var id: Int,
     val title: String,
@@ -10,4 +14,4 @@ data class MovieEntity(
     val voteAverage: String,
     val voteCount: String,
     val popularity: String
-)
+) : Parcelable

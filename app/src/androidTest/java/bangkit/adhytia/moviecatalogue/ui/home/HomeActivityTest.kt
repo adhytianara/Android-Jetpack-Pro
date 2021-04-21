@@ -27,6 +27,25 @@ class HomeActivityTest {
     }
 
     @Test
+    fun loadDetailMovie() {
+        onView(withId(R.id.rv_movies)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                0,
+                click()
+            )
+        )
+        onView(withId(R.id.tv_title)).check(matches(isDisplayed()))
+        onView(withId(R.id.tv_title)).check(matches(withText("Godzilla vs. Kong")))
+        onView(withId(R.id.tv_release_date)).check(matches(isDisplayed()))
+        onView(withId(R.id.tv_popularity)).check(matches(isDisplayed()))
+        onView(withId(R.id.tv_vote_avg)).check(matches(isDisplayed()))
+        onView(withId(R.id.tv_vote_count)).check(matches(isDisplayed()))
+        onView(withId(R.id.tv_overview)).check(matches(isDisplayed()))
+        onView(withId(R.id.img_backdrop)).check(matches(isDisplayed()))
+        onView(withId(R.id.img_poster)).check(matches(isDisplayed()))
+    }
+
+    @Test
     fun loadTvShows() {
         onView(withText("tvshow")).perform(click())
         onView(withId(R.id.rv_tvshows)).check(matches(isDisplayed()))

@@ -1,5 +1,6 @@
 package bangkit.adhytia.moviecatalogue.ui.movie
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import bangkit.adhytia.moviecatalogue.data.MovieEntity
 import bangkit.adhytia.moviecatalogue.databinding.FragmentMovieBinding
 import bangkit.adhytia.moviecatalogue.repository.Repository
+import bangkit.adhytia.moviecatalogue.ui.moviedetail.MovieDetailsActivity
+import bangkit.adhytia.moviecatalogue.ui.moviedetail.MovieDetailsActivity.Companion.EXTRA_MOVIE
 
 class MovieFragment : Fragment() {
     private lateinit var binding: FragmentMovieBinding
@@ -58,6 +61,9 @@ class MovieFragment : Fragment() {
         movieAdapter.setOnItemClickCallback(object : MovieAdapter.OnItemClickCallback {
             override fun onItemClicked(data: MovieEntity) {
                 Toast.makeText(context, data.title, Toast.LENGTH_LONG).show()
+                val intent = Intent(activity, MovieDetailsActivity::class.java)
+                intent.putExtra(EXTRA_MOVIE, data)
+                startActivity(intent)
             }
         })
     }
