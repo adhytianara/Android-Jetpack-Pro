@@ -1,5 +1,6 @@
 package bangkit.adhytia.moviecatalogue.ui.tvshow
 
+import android.content.Intent
 import android.content.res.Configuration
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,6 +13,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import bangkit.adhytia.moviecatalogue.data.TvShowEntity
 import bangkit.adhytia.moviecatalogue.databinding.FragmentTvShowBinding
 import bangkit.adhytia.moviecatalogue.repository.Repository
+import bangkit.adhytia.moviecatalogue.ui.moviedetail.MovieDetailsActivity
+import bangkit.adhytia.moviecatalogue.ui.tvshowdetail.TvShowDetailsActivity
 
 class TvShowFragment : Fragment() {
     private lateinit var binding: FragmentTvShowBinding
@@ -58,6 +61,9 @@ class TvShowFragment : Fragment() {
         tvShowAdapter.setOnItemClickCallback(object : TvShowAdapter.OnItemClickCallback {
             override fun onItemClicked(data: TvShowEntity) {
                 Toast.makeText(context, data.title, Toast.LENGTH_LONG).show()
+                val intent = Intent(activity, TvShowDetailsActivity::class.java)
+                intent.putExtra(TvShowDetailsActivity.EXTRA_TVSHOW, data)
+                startActivity(intent)
             }
         })
     }
