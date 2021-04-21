@@ -13,8 +13,8 @@ import androidx.recyclerview.widget.GridLayoutManager
 import bangkit.adhytia.moviecatalogue.data.TvShowEntity
 import bangkit.adhytia.moviecatalogue.databinding.FragmentTvShowBinding
 import bangkit.adhytia.moviecatalogue.repository.Repository
-import bangkit.adhytia.moviecatalogue.ui.moviedetail.MovieDetailsActivity
 import bangkit.adhytia.moviecatalogue.ui.tvshowdetail.TvShowDetailsActivity
+import bangkit.adhytia.moviecatalogue.ui.tvshowdetail.TvShowDetailsActivity.Companion.EXTRA_TVSHOW
 
 class TvShowFragment : Fragment() {
     private lateinit var binding: FragmentTvShowBinding
@@ -62,7 +62,7 @@ class TvShowFragment : Fragment() {
             override fun onItemClicked(data: TvShowEntity) {
                 Toast.makeText(context, data.title, Toast.LENGTH_LONG).show()
                 val intent = Intent(activity, TvShowDetailsActivity::class.java)
-                intent.putExtra(TvShowDetailsActivity.EXTRA_TVSHOW, data)
+                intent.putExtra(EXTRA_TVSHOW, data.id)
                 startActivity(intent)
             }
         })

@@ -2,9 +2,11 @@ package bangkit.adhytia.moviecatalogue.ui.tvshowdetail
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import bangkit.adhytia.moviecatalogue.R
 import bangkit.adhytia.moviecatalogue.data.TvShowEntity
 import bangkit.adhytia.moviecatalogue.databinding.ActivityTvShowDetailsBinding
+import bangkit.adhytia.moviecatalogue.repository.Repository
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 
@@ -20,13 +22,22 @@ class TvShowDetailsActivity : AppCompatActivity() {
         binding = ActivityTvShowDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val tvShow = intent.getParcelableExtra<TvShowEntity>(EXTRA_TVSHOW)
-        title = tvShow?.title
+        val tvShowId = intent.getIntExtra(EXTRA_TVSHOW, 0)
 
-        populateTvShow(tvShow)
+        val viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.NewInstanceFactory()
+        )[TvShowDetailViewModel::class.java]
+
+        val repository = Repository(this)
+        viewModel.repository = repository
+
+        viewModel.setSelectedTvShow(tvShowId)
+        populateTvShow(viewModel.getTvShow())
     }
 
     private fun populateTvShow(tvShow: TvShowEntity?) {
+        title = tvShow?.title
         binding.tvTitle.text = tvShow?.title
         (getString(R.string.first_air_date) + tvShow?.firstAirDate).also {
             binding.tvFirstAirDate.text = it

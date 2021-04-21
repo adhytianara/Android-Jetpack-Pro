@@ -2,9 +2,11 @@ package bangkit.adhytia.moviecatalogue.ui.moviedetail
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.ViewModelProvider
 import bangkit.adhytia.moviecatalogue.R
 import bangkit.adhytia.moviecatalogue.data.MovieEntity
 import bangkit.adhytia.moviecatalogue.databinding.ActivityMovieDetailsBinding
+import bangkit.adhytia.moviecatalogue.repository.Repository
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 
@@ -20,13 +22,22 @@ class MovieDetailsActivity : AppCompatActivity() {
         binding = ActivityMovieDetailsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val movie = intent.getParcelableExtra<MovieEntity>(EXTRA_MOVIE)
-        title = movie?.title
+        val movieId = intent.getIntExtra(EXTRA_MOVIE, 0)
 
-        populateMovie(movie)
+        val viewModel = ViewModelProvider(
+            this,
+            ViewModelProvider.NewInstanceFactory()
+        )[MovieDetailViewModel::class.java]
+
+        val repository = Repository(this)
+        viewModel.repository = repository
+
+        viewModel.setSelectedMovie(movieId)
+        populateMovie(viewModel.getMovie())
     }
 
     private fun populateMovie(movie: MovieEntity?) {
+        title = movie?.title
         binding.tvTitle.text = movie?.title
         (getString(R.string.release_date) + movie?.releaseDate).also {
             binding.tvReleaseDate.text = it

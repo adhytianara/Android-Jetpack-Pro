@@ -62,7 +62,7 @@ class MovieFragment : Fragment() {
             override fun onItemClicked(data: MovieEntity) {
                 Toast.makeText(context, data.title, Toast.LENGTH_LONG).show()
                 val intent = Intent(activity, MovieDetailsActivity::class.java)
-                intent.putExtra(EXTRA_MOVIE, data)
+                intent.putExtra(EXTRA_MOVIE, data.id)
                 startActivity(intent)
             }
         })
