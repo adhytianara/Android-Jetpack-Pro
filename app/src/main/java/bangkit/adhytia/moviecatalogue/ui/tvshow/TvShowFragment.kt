@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -60,7 +59,6 @@ class TvShowFragment : Fragment() {
 
         tvShowAdapter.setOnItemClickCallback(object : TvShowAdapter.OnItemClickCallback {
             override fun onItemClicked(data: TvShowEntity) {
-                Toast.makeText(context, data.title, Toast.LENGTH_LONG).show()
                 val intent = Intent(activity, TvShowDetailsActivity::class.java)
                 intent.putExtra(EXTRA_TVSHOW, data.id)
                 startActivity(intent)

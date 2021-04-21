@@ -6,7 +6,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.GridLayoutManager
@@ -60,7 +59,6 @@ class MovieFragment : Fragment() {
 
         movieAdapter.setOnItemClickCallback(object : MovieAdapter.OnItemClickCallback {
             override fun onItemClicked(data: MovieEntity) {
-                Toast.makeText(context, data.title, Toast.LENGTH_LONG).show()
                 val intent = Intent(activity, MovieDetailsActivity::class.java)
                 intent.putExtra(EXTRA_MOVIE, data.id)
                 startActivity(intent)
