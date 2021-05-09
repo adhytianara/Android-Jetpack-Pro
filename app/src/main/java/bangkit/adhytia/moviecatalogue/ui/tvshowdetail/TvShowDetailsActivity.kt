@@ -6,7 +6,7 @@ import androidx.lifecycle.ViewModelProvider
 import bangkit.adhytia.moviecatalogue.R
 import bangkit.adhytia.moviecatalogue.data.TvShowEntity
 import bangkit.adhytia.moviecatalogue.databinding.ActivityTvShowDetailsBinding
-import bangkit.adhytia.moviecatalogue.repository.Repository
+import bangkit.adhytia.moviecatalogue.viewmodel.ViewModelFactory
 import com.bumptech.glide.Glide
 import com.bumptech.glide.request.RequestOptions
 
@@ -24,16 +24,17 @@ class TvShowDetailsActivity : AppCompatActivity() {
 
         val tvShowId = intent.getIntExtra(EXTRA_TVSHOW, 0)
 
-        val viewModel = ViewModelProvider(
-            this,
-            ViewModelProvider.NewInstanceFactory()
-        )[TvShowDetailViewModel::class.java]
-
-        val repository = Repository(this)
-        viewModel.repository = repository
+        val factory = ViewModelFactory.getInstance(this)
+        val viewModel =
+            ViewModelProvider(this, factory)[TvShowDetailViewModel::class.java]
 
         viewModel.setSelectedTvShow(tvShowId)
-        populateTvShow(viewModel.getTvShow())
+
+        viewModel.tvShow.observe(this, { tvShow ->
+            populateTvShow(tvShow)
+        })
+
+        viewModel.getTvShow()
     }
 
     private fun populateTvShow(tvShow: TvShowEntity?) {

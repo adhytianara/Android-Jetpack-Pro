@@ -1,27 +1,40 @@
 package bangkit.adhytia.moviecatalogue.ui.tvshowdetail
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import bangkit.adhytia.moviecatalogue.data.TvShowEntity
 import bangkit.adhytia.moviecatalogue.repository.Repository
 import bangkit.adhytia.moviecatalogue.utils.Constants
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNotNull
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito
-import org.mockito.Mockito.mock
+import org.junit.runner.RunWith
+import org.mockito.Mock
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.verify
+import org.mockito.junit.MockitoJUnitRunner
 
+@RunWith(MockitoJUnitRunner::class)
 class TvShowDetailViewModelTest {
     private lateinit var viewModel: TvShowDetailViewModel
-    private lateinit var repository: Repository
     private lateinit var dummyTvShow: TvShowEntity
     private lateinit var dummyTvShowEntities: ArrayList<TvShowEntity>
 
+    @Mock
+    private lateinit var repository: Repository
+
+    @Mock
+    private lateinit var observer: Observer<List<TvShowEntity>>
+
+    @get:Rule
+    var instantTaskExecutorRule = InstantTaskExecutorRule()
+
     @Before
     fun setUp() {
-        repository = mock(Repository::class.java)
-
-        viewModel = TvShowDetailViewModel()
-        viewModel.repository = repository
+        viewModel = TvShowDetailViewModel(repository)
 
         dummyTvShowEntities = arrayListOf()
 
@@ -42,11 +55,15 @@ class TvShowDetailViewModelTest {
 
     @Test
     fun getTvShows() {
-        Mockito.`when`(viewModel.getTvShows()).thenReturn(dummyTvShowEntities)
-        viewModel.setSelectedTvShow(dummyTvShow.id)
-        val tvShowEntity = viewModel.getTvShow()
+        val tvShows = MutableLiveData<List<TvShowEntity>>()
+        tvShows.value = dummyTvShowEntities
 
-        Mockito.verify(repository).listTvShows
+        `when`(repository.getTvShowList()).thenReturn(tvShows)
+        viewModel.setSelectedTvShow(dummyTvShow.id)
+        viewModel.getTvShow()
+        val tvShowEntity = viewModel.tvShow.value!!
+
+        verify(repository).getTvShowList()
         assertNotNull(tvShowEntity)
         assertEquals(dummyTvShow.id, tvShowEntity.id)
         assertEquals(dummyTvShow.title, tvShowEntity.title)

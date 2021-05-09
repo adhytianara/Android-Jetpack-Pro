@@ -1,28 +1,40 @@
 package bangkit.adhytia.moviecatalogue.ui.moviedetail
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import bangkit.adhytia.moviecatalogue.data.MovieEntity
 import bangkit.adhytia.moviecatalogue.repository.Repository
 import bangkit.adhytia.moviecatalogue.utils.Constants
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNotNull
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito
+import org.junit.runner.RunWith
+import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
+import org.mockito.junit.MockitoJUnitRunner
 
+@RunWith(MockitoJUnitRunner::class)
 class MovieDetailViewModelTest {
     private lateinit var viewModel: MovieDetailViewModel
-    private lateinit var repository: Repository
     private lateinit var dummyMovie: MovieEntity
     private lateinit var dummyMovieEntities: ArrayList<MovieEntity>
 
+    @Mock
+    private lateinit var repository: Repository
+
+    @Mock
+    private lateinit var observer: Observer<List<MovieEntity>>
+
+    @get:Rule
+    var instantTaskExecutorRule = InstantTaskExecutorRule()
+
     @Before
     fun setUp() {
-        repository = Mockito.mock(Repository::class.java)
-
-        viewModel = MovieDetailViewModel()
-        viewModel.repository = repository
+        viewModel = MovieDetailViewModel(repository)
 
         dummyMovieEntities = arrayListOf()
 
@@ -42,12 +54,16 @@ class MovieDetailViewModelTest {
     }
 
     @Test
-    fun getMovies() {
-        `when`(viewModel.getMovies()).thenReturn(dummyMovieEntities)
-        viewModel.setSelectedMovie(dummyMovie.id)
-        val movieEntity = viewModel.getMovie()
+    fun getMovie() {
+        val movies = MutableLiveData<List<MovieEntity>>()
+        movies.value = dummyMovieEntities
 
-        verify(repository).listMovies
+        `when`(repository.getMovieList()).thenReturn(movies)
+        viewModel.setSelectedMovie(dummyMovie.id)
+        viewModel.getMovie()
+        val movieEntity = viewModel.movie.value!!
+
+        verify(repository).getMovieList()
         assertNotNull(movieEntity)
         assertEquals(dummyMovie.id, movieEntity.id)
         assertEquals(dummyMovie.title, movieEntity.title)
