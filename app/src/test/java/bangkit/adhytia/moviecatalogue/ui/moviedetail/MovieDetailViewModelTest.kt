@@ -27,7 +27,7 @@ class MovieDetailViewModelTest {
     private lateinit var repository: Repository
 
     @Mock
-    private lateinit var observer: Observer<List<MovieEntity>>
+    private lateinit var observer: Observer<MovieEntity>
 
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -74,5 +74,8 @@ class MovieDetailViewModelTest {
         assertEquals(dummyMovie.overview, movieEntity.overview)
         assertEquals(dummyMovie.backdropURL, movieEntity.backdropURL)
         assertEquals(dummyMovie.posterURL, movieEntity.posterURL)
+
+        viewModel.movie.observeForever(observer)
+        verify(observer).onChanged(dummyMovie)
     }
 }

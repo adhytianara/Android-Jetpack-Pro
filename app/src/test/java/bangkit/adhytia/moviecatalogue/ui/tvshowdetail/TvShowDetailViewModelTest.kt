@@ -27,7 +27,7 @@ class TvShowDetailViewModelTest {
     private lateinit var repository: Repository
 
     @Mock
-    private lateinit var observer: Observer<List<TvShowEntity>>
+    private lateinit var observer: Observer<TvShowEntity>
 
     @get:Rule
     var instantTaskExecutorRule = InstantTaskExecutorRule()
@@ -74,5 +74,8 @@ class TvShowDetailViewModelTest {
         assertEquals(dummyTvShow.overview, tvShowEntity.overview)
         assertEquals(dummyTvShow.backdropURL, tvShowEntity.backdropURL)
         assertEquals(dummyTvShow.posterURL, tvShowEntity.posterURL)
+
+        viewModel.tvShow.observeForever(observer)
+        verify(observer).onChanged(dummyTvShow)
     }
 }
