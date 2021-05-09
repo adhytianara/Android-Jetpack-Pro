@@ -3,6 +3,7 @@ package bangkit.adhytia.moviecatalogue.ui.home
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
 import androidx.test.espresso.action.ViewActions.click
+import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.assertion.ViewAssertions.matches
 import androidx.test.espresso.contrib.RecyclerViewActions
 import androidx.test.espresso.matcher.ViewMatchers.*
@@ -69,6 +70,7 @@ class HomeActivityTest {
         )
         onView(withId(R.id.tv_title)).check(matches(isDisplayed()))
         onView(withId(R.id.tv_title)).check(matches(withText(movieEntity.title)))
+        onView(withId(R.id.tv_title)).perform(swipeUp())
         onView(withId(R.id.tv_release_date)).check(matches(isDisplayed()))
         onView(withId(R.id.tv_release_date)).check(matches(withText("Release date: " + movieEntity.releaseDate)))
         onView(withId(R.id.tv_popularity)).check(matches(isDisplayed()))
@@ -105,6 +107,7 @@ class HomeActivityTest {
         )
         onView(withId(R.id.tv_title)).check(matches(isDisplayed()))
         onView(withId(R.id.tv_title)).check(matches(withText(tvShowEntity.title)))
+        onView(withId(R.id.tv_title)).perform(swipeUp())
         onView(withId(R.id.tv_first_air_date)).check(matches(isDisplayed()))
         onView(withId(R.id.tv_first_air_date)).check(matches(withText("First air date: " + tvShowEntity.firstAirDate)))
         onView(withId(R.id.tv_popularity)).check(matches(isDisplayed()))
