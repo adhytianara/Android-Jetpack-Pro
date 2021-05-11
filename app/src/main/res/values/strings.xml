@@ -9,4 +9,7 @@
     <string name="vote_average">"Vote average: "</string>
     <string name="vote_count">"Vote Count: "</string>
     <string name="first_air_date">"First air date: "</string>
+    <string name="image_backdrop">Image Backdrop</string>
+    <string name="logo">Logo</string>
+    <string name="poster">Poster</string>
 </resources>

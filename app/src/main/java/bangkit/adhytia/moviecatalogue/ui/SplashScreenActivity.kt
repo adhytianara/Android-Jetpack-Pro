@@ -8,8 +8,7 @@ import android.view.WindowManager
 import bangkit.adhytia.moviecatalogue.R
 import bangkit.adhytia.moviecatalogue.ui.home.HomeActivity
 
-@Suppress("DEPRECATION")
-class SplashScreen : AppCompatActivity() {
+class SplashScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash_screen)
@@ -19,7 +18,7 @@ class SplashScreen : AppCompatActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN
         )
 
-        Handler().postDelayed({
+        Handler(mainLooper).postDelayed({
             val intent = Intent(this, HomeActivity::class.java)
             startActivity(intent)
             finish()
