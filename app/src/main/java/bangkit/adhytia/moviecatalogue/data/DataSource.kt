@@ -6,7 +6,6 @@ import org.json.JSONException
 import org.json.JSONObject
 
 class DataSource private constructor(private val jsonHelper: JsonHelper) {
-
     companion object {
         @Volatile
         private var instance: DataSource? = null

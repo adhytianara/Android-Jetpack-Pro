@@ -24,4 +24,16 @@ class TvShowDetailViewModel(private val mRepository: Repository) : ViewModel() {
             }
         }
     }
+
+    fun getTvShowInDatabase(): LiveData<TvShowEntity> {
+        return mRepository.getTvShowById(tvShowId)
+    }
+
+    fun insertTvShow(tvShow: TvShowEntity) {
+        mRepository.insertTvShow(tvShow)
+    }
+
+    fun deleteTvShow(tvShow: TvShowEntity) {
+        mRepository.deleteTvShow(tvShow)
+    }
 }

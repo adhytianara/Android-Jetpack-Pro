@@ -24,4 +24,16 @@ class MovieDetailViewModel(private val mRepository: Repository) : ViewModel() {
             }
         }
     }
+
+    fun getMovieInDatabase(): LiveData<MovieEntity> {
+        return mRepository.getMovieById(movieId)
+    }
+
+    fun insertMovie(movie: MovieEntity) {
+        mRepository.insertMovie(movie)
+    }
+
+    fun deleteMovie(movie: MovieEntity) {
+        mRepository.deleteMovie(movie)
+    }
 }

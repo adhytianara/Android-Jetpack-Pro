@@ -6,6 +6,7 @@ import androidx.lifecycle.Observer
 import bangkit.adhytia.moviecatalogue.data.TvShowEntity
 import bangkit.adhytia.moviecatalogue.repository.Repository
 import bangkit.adhytia.moviecatalogue.utils.Constants
+import com.nhaarman.mockitokotlin2.doNothing
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNotNull
 import org.junit.Before
@@ -77,5 +78,51 @@ class TvShowDetailViewModelTest {
 
         viewModel.tvShow.observeForever(observer)
         verify(observer).onChanged(dummyTvShow)
+    }
+
+    @Test
+    fun getTvShowInDatabase() {
+        val tvShow = MutableLiveData<TvShowEntity>()
+        tvShow.value = dummyTvShow
+
+        `when`(repository.getTvShowById(dummyTvShow.id)).thenReturn(tvShow)
+        viewModel.setSelectedTvShow(dummyTvShow.id)
+
+        val tvShowEntity = viewModel.getTvShowInDatabase().value!!
+
+        verify(repository).getTvShowById(dummyTvShow.id)
+        assertNotNull(tvShowEntity)
+        assertEquals(dummyTvShow.id, tvShowEntity.id)
+        assertEquals(dummyTvShow.title, tvShowEntity.title)
+        assertEquals(dummyTvShow.firstAirDate, tvShowEntity.firstAirDate)
+        assertEquals(dummyTvShow.popularity, tvShowEntity.popularity)
+        assertEquals(dummyTvShow.voteAverage, tvShowEntity.voteAverage)
+        assertEquals(dummyTvShow.voteCount, tvShowEntity.voteCount)
+        assertEquals(dummyTvShow.overview, tvShowEntity.overview)
+        assertEquals(dummyTvShow.backdropURL, tvShowEntity.backdropURL)
+        assertEquals(dummyTvShow.posterURL, tvShowEntity.posterURL)
+
+        viewModel.getTvShowInDatabase().observeForever(observer)
+        verify(observer).onChanged(dummyTvShow)
+    }
+
+    @Test
+    fun insertTvShow() {
+        doNothing().`when`(repository).insertTvShow(dummyTvShow)
+        val insert = viewModel.insertTvShow(dummyTvShow)
+
+        verify(repository).insertTvShow(dummyTvShow)
+
+        assertEquals(insert, Unit)
+    }
+
+    @Test
+    fun deleteTvShow() {
+        doNothing().`when`(repository).deleteTvShow(dummyTvShow)
+        val delete = viewModel.deleteTvShow(dummyTvShow)
+
+        verify(repository).deleteTvShow(dummyTvShow)
+
+        assertEquals(delete, Unit)
     }
 }

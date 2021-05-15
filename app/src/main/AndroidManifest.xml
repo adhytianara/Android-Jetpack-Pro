@@ -11,6 +11,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.MovieCatalogue">
+        <activity android:name=".ui.favorite.FavoriteActivity" />
         <activity
             android:name=".ui.SplashScreenActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar">

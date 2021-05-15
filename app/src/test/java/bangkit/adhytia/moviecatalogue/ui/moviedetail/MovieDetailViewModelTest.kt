@@ -6,6 +6,7 @@ import androidx.lifecycle.Observer
 import bangkit.adhytia.moviecatalogue.data.MovieEntity
 import bangkit.adhytia.moviecatalogue.repository.Repository
 import bangkit.adhytia.moviecatalogue.utils.Constants
+import com.nhaarman.mockitokotlin2.doNothing
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNotNull
 import org.junit.Before
@@ -77,5 +78,51 @@ class MovieDetailViewModelTest {
 
         viewModel.movie.observeForever(observer)
         verify(observer).onChanged(dummyMovie)
+    }
+
+    @Test
+    fun getMovieInDatabase() {
+        val movie = MutableLiveData<MovieEntity>()
+        movie.value = dummyMovie
+
+        `when`(repository.getMovieById(dummyMovie.id)).thenReturn(movie)
+        viewModel.setSelectedMovie(dummyMovie.id)
+
+        val movieEntity = viewModel.getMovieInDatabase().value!!
+
+        verify(repository).getMovieById(dummyMovie.id)
+        assertNotNull(movieEntity)
+        assertEquals(dummyMovie.id, movieEntity.id)
+        assertEquals(dummyMovie.title, movieEntity.title)
+        assertEquals(dummyMovie.releaseDate, movieEntity.releaseDate)
+        assertEquals(dummyMovie.popularity, movieEntity.popularity)
+        assertEquals(dummyMovie.voteAverage, movieEntity.voteAverage)
+        assertEquals(dummyMovie.voteCount, movieEntity.voteCount)
+        assertEquals(dummyMovie.overview, movieEntity.overview)
+        assertEquals(dummyMovie.backdropURL, movieEntity.backdropURL)
+        assertEquals(dummyMovie.posterURL, movieEntity.posterURL)
+
+        viewModel.getMovieInDatabase().observeForever(observer)
+        verify(observer).onChanged(dummyMovie)
+    }
+
+    @Test
+    fun insertMovie() {
+        doNothing().`when`(repository).insertMovie(dummyMovie)
+        val insert = viewModel.insertMovie(dummyMovie)
+
+        verify(repository).insertMovie(dummyMovie)
+
+        assertEquals(insert, Unit)
+    }
+
+    @Test
+    fun deleteMovie() {
+        doNothing().`when`(repository).deleteMovie(dummyMovie)
+        val delete = viewModel.deleteMovie(dummyMovie)
+
+        verify(repository).deleteMovie(dummyMovie)
+
+        assertEquals(delete, Unit)
     }
 }

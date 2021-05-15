@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import bangkit.adhytia.moviecatalogue.di.Injection
 import bangkit.adhytia.moviecatalogue.repository.Repository
+import bangkit.adhytia.moviecatalogue.ui.favorite.FavoriteViewModel
 import bangkit.adhytia.moviecatalogue.ui.movie.MovieViewModel
 import bangkit.adhytia.moviecatalogue.ui.moviedetail.MovieDetailViewModel
 import bangkit.adhytia.moviecatalogue.ui.tvshow.TvShowViewModel
@@ -39,6 +40,9 @@ class ViewModelFactory private constructor(private val mRepository: Repository) 
             }
             modelClass.isAssignableFrom(TvShowDetailViewModel::class.java) -> {
                 TvShowDetailViewModel(mRepository) as T
+            }
+            modelClass.isAssignableFrom(FavoriteViewModel::class.java) -> {
+                FavoriteViewModel(mRepository) as T
             }
             else -> throw Throwable("Unknown ViewModel class: " + modelClass.name)
         }
