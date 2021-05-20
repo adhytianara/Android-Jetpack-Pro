@@ -2,6 +2,7 @@ package bangkit.adhytia.moviecatalogue.ui.home
 
 import androidx.recyclerview.widget.RecyclerView
 import androidx.test.espresso.Espresso.onView
+import androidx.test.espresso.Espresso.pressBack
 import androidx.test.espresso.action.ViewActions.click
 import androidx.test.espresso.action.ViewActions.swipeUp
 import androidx.test.espresso.assertion.ViewAssertions.matches
@@ -83,6 +84,8 @@ class HomeActivityTest {
         onView(withId(R.id.tv_overview)).check(matches(withText(movieEntity.overview)))
         onView(withId(R.id.img_backdrop)).check(matches(isDisplayed()))
         onView(withId(R.id.img_poster)).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_favorite)).check(matches(isDisplayed()))
+        pressBack()
     }
 
     @Test
@@ -120,5 +123,116 @@ class HomeActivityTest {
         onView(withId(R.id.tv_overview)).check(matches(withText(tvShowEntity.overview)))
         onView(withId(R.id.img_backdrop)).check(matches(isDisplayed()))
         onView(withId(R.id.img_poster)).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_favorite)).check(matches(isDisplayed()))
+        pressBack()
+    }
+
+    @Test
+    fun insertAndDeleteFavoriteMovie() {
+        onView(withId(R.id.rv_movies)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                0,
+                click()
+            )
+        )
+        onView(withId(R.id.btn_favorite)).perform(click())
+        pressBack()
+
+        onView(withId(R.id.menu_favorite)).perform(click())
+        onView(withId(R.id.btn_movie)).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_tvShow)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.btn_movie)).perform(click())
+        onView(withId(R.id.rv_favorite)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.rv_favorite)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                0,
+                click()
+            )
+        )
+        onView(withId(R.id.btn_favorite)).perform(click())
+        pressBack()
+    }
+
+    @Test
+    fun insertAndDeleteFavoriteTvShow() {
+        onView(withText("tvshow")).perform(click())
+        onView(withId(R.id.rv_tvshows)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                0,
+                click()
+            )
+        )
+        onView(withId(R.id.btn_favorite)).perform(click())
+        pressBack()
+
+        onView(withId(R.id.menu_favorite)).perform(click())
+        onView(withId(R.id.btn_tvShow)).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_tvShow)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.btn_tvShow)).perform(click())
+        onView(withId(R.id.rv_favorite)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.rv_favorite)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                0,
+                click()
+            )
+        )
+        onView(withId(R.id.btn_favorite)).perform(click())
+        pressBack()
+    }
+
+    @Test
+    fun insertDeleteFavoriteMovieAndTvShow() {
+        onView(withId(R.id.rv_movies)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                0,
+                click()
+            )
+        )
+        onView(withId(R.id.btn_favorite)).perform(click())
+        pressBack()
+
+        onView(withText("tvshow")).perform(click())
+        onView(withId(R.id.rv_tvshows)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                0,
+                click()
+            )
+        )
+        onView(withId(R.id.btn_favorite)).perform(click())
+        pressBack()
+
+        onView(withId(R.id.menu_favorite)).perform(click())
+        onView(withId(R.id.btn_movie)).check(matches(isDisplayed()))
+        onView(withId(R.id.btn_tvShow)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.btn_movie)).perform(click())
+        onView(withId(R.id.rv_favorite)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.btn_tvShow)).perform(click())
+        onView(withId(R.id.rv_favorite)).check(matches(isDisplayed()))
+
+        onView(withId(R.id.rv_favorite)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                0,
+                click()
+            )
+        )
+        onView(withId(R.id.btn_favorite)).perform(click())
+        pressBack()
+
+        onView(withId(R.id.btn_movie)).perform(click())
+
+        onView(withId(R.id.rv_favorite)).perform(
+            RecyclerViewActions.actionOnItemAtPosition<RecyclerView.ViewHolder>(
+                0,
+                click()
+            )
+        )
+        onView(withId(R.id.btn_favorite)).perform(click())
+        pressBack()
     }
 }

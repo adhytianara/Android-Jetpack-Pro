@@ -1,27 +1,41 @@
 package bangkit.adhytia.moviecatalogue.ui.tvshowdetail
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import bangkit.adhytia.moviecatalogue.data.TvShowEntity
 import bangkit.adhytia.moviecatalogue.repository.Repository
 import bangkit.adhytia.moviecatalogue.utils.Constants
+import com.nhaarman.mockitokotlin2.doNothing
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNotNull
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito
-import org.mockito.Mockito.mock
+import org.junit.runner.RunWith
+import org.mockito.Mock
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.verify
+import org.mockito.junit.MockitoJUnitRunner
 
+@RunWith(MockitoJUnitRunner::class)
 class TvShowDetailViewModelTest {
     private lateinit var viewModel: TvShowDetailViewModel
-    private lateinit var repository: Repository
     private lateinit var dummyTvShow: TvShowEntity
     private lateinit var dummyTvShowEntities: ArrayList<TvShowEntity>
 
+    @Mock
+    private lateinit var repository: Repository
+
+    @Mock
+    private lateinit var observer: Observer<TvShowEntity>
+
+    @get:Rule
+    var instantTaskExecutorRule = InstantTaskExecutorRule()
+
     @Before
     fun setUp() {
-        repository = mock(Repository::class.java)
-
-        viewModel = TvShowDetailViewModel()
-        viewModel.repository = repository
+        viewModel = TvShowDetailViewModel(repository)
 
         dummyTvShowEntities = arrayListOf()
 
@@ -42,11 +56,15 @@ class TvShowDetailViewModelTest {
 
     @Test
     fun getTvShows() {
-        Mockito.`when`(viewModel.getTvShows()).thenReturn(dummyTvShowEntities)
-        viewModel.setSelectedTvShow(dummyTvShow.id)
-        val tvShowEntity = viewModel.getTvShow()
+        val tvShows = MutableLiveData<List<TvShowEntity>>()
+        tvShows.value = dummyTvShowEntities
 
-        Mockito.verify(repository).listTvShows
+        `when`(repository.getTvShowList()).thenReturn(tvShows)
+        viewModel.setSelectedTvShow(dummyTvShow.id)
+        viewModel.getTvShow()
+        val tvShowEntity = viewModel.tvShow.value!!
+
+        verify(repository).getTvShowList()
         assertNotNull(tvShowEntity)
         assertEquals(dummyTvShow.id, tvShowEntity.id)
         assertEquals(dummyTvShow.title, tvShowEntity.title)
@@ -57,5 +75,54 @@ class TvShowDetailViewModelTest {
         assertEquals(dummyTvShow.overview, tvShowEntity.overview)
         assertEquals(dummyTvShow.backdropURL, tvShowEntity.backdropURL)
         assertEquals(dummyTvShow.posterURL, tvShowEntity.posterURL)
+
+        viewModel.tvShow.observeForever(observer)
+        verify(observer).onChanged(dummyTvShow)
+    }
+
+    @Test
+    fun getTvShowInDatabase() {
+        val tvShow = MutableLiveData<TvShowEntity>()
+        tvShow.value = dummyTvShow
+
+        `when`(repository.getTvShowById(dummyTvShow.id)).thenReturn(tvShow)
+        viewModel.setSelectedTvShow(dummyTvShow.id)
+
+        val tvShowEntity = viewModel.getTvShowInDatabase().value!!
+
+        verify(repository).getTvShowById(dummyTvShow.id)
+        assertNotNull(tvShowEntity)
+        assertEquals(dummyTvShow.id, tvShowEntity.id)
+        assertEquals(dummyTvShow.title, tvShowEntity.title)
+        assertEquals(dummyTvShow.firstAirDate, tvShowEntity.firstAirDate)
+        assertEquals(dummyTvShow.popularity, tvShowEntity.popularity)
+        assertEquals(dummyTvShow.voteAverage, tvShowEntity.voteAverage)
+        assertEquals(dummyTvShow.voteCount, tvShowEntity.voteCount)
+        assertEquals(dummyTvShow.overview, tvShowEntity.overview)
+        assertEquals(dummyTvShow.backdropURL, tvShowEntity.backdropURL)
+        assertEquals(dummyTvShow.posterURL, tvShowEntity.posterURL)
+
+        viewModel.getTvShowInDatabase().observeForever(observer)
+        verify(observer).onChanged(dummyTvShow)
+    }
+
+    @Test
+    fun insertTvShow() {
+        doNothing().`when`(repository).insertTvShow(dummyTvShow)
+        val insert = viewModel.insertTvShow(dummyTvShow)
+
+        verify(repository).insertTvShow(dummyTvShow)
+
+        assertEquals(insert, Unit)
+    }
+
+    @Test
+    fun deleteTvShow() {
+        doNothing().`when`(repository).deleteTvShow(dummyTvShow)
+        val delete = viewModel.deleteTvShow(dummyTvShow)
+
+        verify(repository).deleteTvShow(dummyTvShow)
+
+        assertEquals(delete, Unit)
     }
 }

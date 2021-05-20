@@ -1,11 +1,10 @@
 package bangkit.adhytia.moviecatalogue.ui.tvshow
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import bangkit.adhytia.moviecatalogue.data.TvShowEntity
 import bangkit.adhytia.moviecatalogue.repository.Repository
 
-class TvShowViewModel : ViewModel() {
-    lateinit var repository: Repository
-
-    fun getTvShows(): List<TvShowEntity> = repository.listTvShows
+class TvShowViewModel(private val mRepository: Repository) : ViewModel() {
+    fun getTvShows(): LiveData<List<TvShowEntity>> = mRepository.getTvShowList()
 }

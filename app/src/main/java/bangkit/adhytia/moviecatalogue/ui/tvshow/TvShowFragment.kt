@@ -8,12 +8,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.GridLayoutManager
 import bangkit.adhytia.moviecatalogue.data.TvShowEntity
 import bangkit.adhytia.moviecatalogue.databinding.FragmentTvShowBinding
-import bangkit.adhytia.moviecatalogue.repository.Repository
 import bangkit.adhytia.moviecatalogue.ui.tvshowdetail.TvShowDetailsActivity
 import bangkit.adhytia.moviecatalogue.ui.tvshowdetail.TvShowDetailsActivity.Companion.EXTRA_TVSHOW
+import bangkit.adhytia.moviecatalogue.viewmodel.ViewModelFactory
 
 class TvShowFragment : Fragment() {
     private lateinit var binding: FragmentTvShowBinding
@@ -31,38 +32,40 @@ class TvShowFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         if (activity != null) {
-            val repository = Repository(activity!!)
+            val factory = ViewModelFactory.getInstance(requireContext())
+            val viewModel =
+                ViewModelProvider(requireActivity(), factory)[TvShowViewModel::class.java]
 
-            val viewModel = ViewModelProvider(
-                this,
-                ViewModelProvider.NewInstanceFactory()
-            )[TvShowViewModel::class.java]
-
-            viewModel.repository = repository
-
-            val tvShows = viewModel.getTvShows()
             tvShowAdapter = TvShowAdapter()
-            tvShowAdapter.setTvShows(tvShows)
-            showRecyclerGrid()
+            viewModel.getTvShows().observe(viewLifecycleOwner, { tvShows ->
+                populateRecyclerView(tvShows)
+            })
+
+            viewModel.getTvShows()
+
+            tvShowAdapter.setOnItemClickCallback(object : TvShowAdapter.OnItemClickCallback {
+                override fun onItemClicked(data: TvShowEntity) {
+                    val intent = Intent(activity, TvShowDetailsActivity::class.java)
+                    intent.putExtra(EXTRA_TVSHOW, data.id)
+                    startActivity(intent)
+                }
+            })
         }
     }
 
-    private fun showRecyclerGrid() {
+    private fun populateRecyclerView(tvShows: List<TvShowEntity>) {
         val orientation = resources.configuration.orientation
         val spanCount = if (orientation == Configuration.ORIENTATION_PORTRAIT) 3 else 6
 
-        with(binding.rvTvshows) {
-            layoutManager = GridLayoutManager(context, spanCount)
-            setHasFixedSize(true)
-            adapter = tvShowAdapter
+        with(binding) {
+            tvShowAdapter.setTvShows(tvShows)
+            tvShowAdapter.notifyDataSetChanged()
+            rvTvshows.layoutManager = GridLayoutManager(context, spanCount)
+            rvTvshows.setHasFixedSize(true)
+            rvTvshows.adapter = tvShowAdapter
+            val dividerItemDecoration =
+                DividerItemDecoration(requireContext(), DividerItemDecoration.VERTICAL)
+            rvTvshows.addItemDecoration(dividerItemDecoration)
         }
-
-        tvShowAdapter.setOnItemClickCallback(object : TvShowAdapter.OnItemClickCallback {
-            override fun onItemClicked(data: TvShowEntity) {
-                val intent = Intent(activity, TvShowDetailsActivity::class.java)
-                intent.putExtra(EXTRA_TVSHOW, data.id)
-                startActivity(intent)
-            }
-        })
     }
 }

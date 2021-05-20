@@ -12,6 +12,6 @@
         android:id="@+id/img_poster"
         android:layout_width="130dp"
         android:layout_height="150dp"
-        tools:src="@android:color/darker_gray"
-        tools:ignore="ContentDescription" />
+        android:contentDescription="@string/poster"
+        tools:src="@android:color/darker_gray" />
 </LinearLayout>

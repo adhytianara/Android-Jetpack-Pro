@@ -1,28 +1,41 @@
 package bangkit.adhytia.moviecatalogue.ui.moviedetail
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import bangkit.adhytia.moviecatalogue.data.MovieEntity
 import bangkit.adhytia.moviecatalogue.repository.Repository
 import bangkit.adhytia.moviecatalogue.utils.Constants
+import com.nhaarman.mockitokotlin2.doNothing
 import junit.framework.Assert.assertEquals
 import junit.framework.Assert.assertNotNull
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito
+import org.junit.runner.RunWith
+import org.mockito.Mock
 import org.mockito.Mockito.`when`
 import org.mockito.Mockito.verify
+import org.mockito.junit.MockitoJUnitRunner
 
+@RunWith(MockitoJUnitRunner::class)
 class MovieDetailViewModelTest {
     private lateinit var viewModel: MovieDetailViewModel
-    private lateinit var repository: Repository
     private lateinit var dummyMovie: MovieEntity
     private lateinit var dummyMovieEntities: ArrayList<MovieEntity>
 
+    @Mock
+    private lateinit var repository: Repository
+
+    @Mock
+    private lateinit var observer: Observer<MovieEntity>
+
+    @get:Rule
+    var instantTaskExecutorRule = InstantTaskExecutorRule()
+
     @Before
     fun setUp() {
-        repository = Mockito.mock(Repository::class.java)
-
-        viewModel = MovieDetailViewModel()
-        viewModel.repository = repository
+        viewModel = MovieDetailViewModel(repository)
 
         dummyMovieEntities = arrayListOf()
 
@@ -42,12 +55,16 @@ class MovieDetailViewModelTest {
     }
 
     @Test
-    fun getMovies() {
-        `when`(viewModel.getMovies()).thenReturn(dummyMovieEntities)
-        viewModel.setSelectedMovie(dummyMovie.id)
-        val movieEntity = viewModel.getMovie()
+    fun getMovie() {
+        val movies = MutableLiveData<List<MovieEntity>>()
+        movies.value = dummyMovieEntities
 
-        verify(repository).listMovies
+        `when`(repository.getMovieList()).thenReturn(movies)
+        viewModel.setSelectedMovie(dummyMovie.id)
+        viewModel.getMovie()
+        val movieEntity = viewModel.movie.value!!
+
+        verify(repository).getMovieList()
         assertNotNull(movieEntity)
         assertEquals(dummyMovie.id, movieEntity.id)
         assertEquals(dummyMovie.title, movieEntity.title)
@@ -58,5 +75,54 @@ class MovieDetailViewModelTest {
         assertEquals(dummyMovie.overview, movieEntity.overview)
         assertEquals(dummyMovie.backdropURL, movieEntity.backdropURL)
         assertEquals(dummyMovie.posterURL, movieEntity.posterURL)
+
+        viewModel.movie.observeForever(observer)
+        verify(observer).onChanged(dummyMovie)
+    }
+
+    @Test
+    fun getMovieInDatabase() {
+        val movie = MutableLiveData<MovieEntity>()
+        movie.value = dummyMovie
+
+        `when`(repository.getMovieById(dummyMovie.id)).thenReturn(movie)
+        viewModel.setSelectedMovie(dummyMovie.id)
+
+        val movieEntity = viewModel.getMovieInDatabase().value!!
+
+        verify(repository).getMovieById(dummyMovie.id)
+        assertNotNull(movieEntity)
+        assertEquals(dummyMovie.id, movieEntity.id)
+        assertEquals(dummyMovie.title, movieEntity.title)
+        assertEquals(dummyMovie.releaseDate, movieEntity.releaseDate)
+        assertEquals(dummyMovie.popularity, movieEntity.popularity)
+        assertEquals(dummyMovie.voteAverage, movieEntity.voteAverage)
+        assertEquals(dummyMovie.voteCount, movieEntity.voteCount)
+        assertEquals(dummyMovie.overview, movieEntity.overview)
+        assertEquals(dummyMovie.backdropURL, movieEntity.backdropURL)
+        assertEquals(dummyMovie.posterURL, movieEntity.posterURL)
+
+        viewModel.getMovieInDatabase().observeForever(observer)
+        verify(observer).onChanged(dummyMovie)
+    }
+
+    @Test
+    fun insertMovie() {
+        doNothing().`when`(repository).insertMovie(dummyMovie)
+        val insert = viewModel.insertMovie(dummyMovie)
+
+        verify(repository).insertMovie(dummyMovie)
+
+        assertEquals(insert, Unit)
+    }
+
+    @Test
+    fun deleteMovie() {
+        doNothing().`when`(repository).deleteMovie(dummyMovie)
+        val delete = viewModel.deleteMovie(dummyMovie)
+
+        verify(repository).deleteMovie(dummyMovie)
+
+        assertEquals(delete, Unit)
     }
 }

@@ -1,26 +1,40 @@
 package bangkit.adhytia.moviecatalogue.ui.tvshow
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import bangkit.adhytia.moviecatalogue.data.TvShowEntity
 import bangkit.adhytia.moviecatalogue.repository.Repository
 import bangkit.adhytia.moviecatalogue.utils.Constants
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertNotNull
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
-import org.mockito.Mockito
+import org.junit.runner.RunWith
+import org.mockito.Mock
+import org.mockito.Mockito.`when`
+import org.mockito.Mockito.verify
+import org.mockito.junit.MockitoJUnitRunner
 
+@RunWith(MockitoJUnitRunner::class)
 class TvShowViewModelTest {
 
     private lateinit var viewModel: TvShowViewModel
-    private lateinit var repository: Repository
     private lateinit var dummyTvShowEntities: ArrayList<TvShowEntity>
+
+    @Mock
+    private lateinit var repository: Repository
+
+    @Mock
+    private lateinit var observer: Observer<List<TvShowEntity>>
+
+    @get:Rule
+    var instantTaskExecutorRule = InstantTaskExecutorRule()
 
     @Before
     fun setUp() {
-        repository = Mockito.mock(Repository::class.java)
-
-        viewModel = TvShowViewModel()
-        viewModel.repository = repository
+        viewModel = TvShowViewModel(repository)
 
         dummyTvShowEntities = arrayListOf()
 
@@ -41,13 +55,17 @@ class TvShowViewModelTest {
 
     @Test
     fun getTvShows() {
-        Mockito.`when`(viewModel.getTvShows()).thenReturn(dummyTvShowEntities)
+        val tvShows = MutableLiveData<List<TvShowEntity>>()
+        tvShows.value = dummyTvShowEntities
 
-        val tvShowEntities = viewModel.getTvShows()
-
-        Mockito.verify(repository).listTvShows
+        `when`(repository.getTvShowList()).thenReturn(tvShows)
+        val tvShowEntities = viewModel.getTvShows().value
+        verify(repository).getTvShowList()
         assertEquals(dummyTvShowEntities, tvShowEntities)
         assertNotNull(tvShowEntities)
-        assertEquals(1, tvShowEntities.size)
+        assertEquals(1, tvShowEntities?.size)
+
+        viewModel.getTvShows().observeForever(observer)
+        verify(observer).onChanged(dummyTvShowEntities)
     }
 }
